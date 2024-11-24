@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Relacionar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #87CEEB, #FF6347, #FFD700);
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .description {
+            font-size: 1.2em;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        .game-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .word, .image {
+            cursor: pointer;
+            padding: 10px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .word {
+            width: 120px;
+            text-align: center;
+        }
+        .image {
+            width: 120px;
+            height: 120px;
+        }
+        .selected {
+            background-color: #ffecb3;
+            border-color: #ffc107;
+        }
+        .matched {
+            background-color: #c8e6c9;
+            border-color: #4caf50;
+            pointer-events: none;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .buttons button:hover {
+            background-color: #ff4500;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            display: none;
+        }
+        .message.success {
+            color: #4178df;
+        }
+        .message.fail {
+            color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Un jueguito para mi chica :3</div>
+    <p class="description">Haz clic en una palabra y luego en la imagen correspondiente para relacionarlas. ¡Diviértete mi reina!</p>
+
+    <div class="game-container">
+        <!-- Palabras -->
+        <div class="word" data-key="mar">Nuestro Sueño😍</div>
+        <div class="word" data-key="gato">Nuestra Canción🎶</div>
+        <div class="word" data-key="flor">Nuestro Destino🧭</div>
+        <div class="word" data-key="café">Nuestra Meta💙</div>
+        <div class="word" data-key="sol">Nuestra Peli
+            🍿 </div>
+        
+
+        <!-- Imágenes -->
+        <img src="nc.jpg" class="image" data-key="café" alt="Café">
+        <img src="nd.jpg" class="image" data-key="flor" alt="Flor">
+        <img src="nm.jpg" class="image" data-key="gato" alt="Gato">
+        <img src="np.jpg" class="image" data-key="sol" alt="Sol">
+        <img src="ns.jpg" class="image" data-key="mar" alt="Mar">
+    </div>
+
+    <div class="buttons">
+        <button id="retry">Reintentar</button>
+        <button id="done">¡Hecho!</button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <script>
+        const words = document.querySelectorAll('.word');
+        const images = document.querySelectorAll('.image');
+        const retryButton = document.getElementById('retry');
+        const doneButton = document.getElementById('done');
+        const message = document.getElementById('message');
+
+        let selectedWord = null;
+        let matches = new Map();
+
+        function resetGame() {
+            matches.clear();
+            selectedWord = null;
+            words.forEach(word => word.classList.remove('selected', 'matched'));
+            images.forEach(image => image.classList.remove('selected', 'matched'));
+            message.style.display = 'none';
+        }
+
+        words.forEach(word => {
+            word.addEventListener('click', () => {
+                if (selectedWord) selectedWord.classList.remove('selected');
+                selectedWord = word;
+                word.classList.add('selected');
+            });
+        });
+
+        images.forEach(image => {
+            image.addEventListener('click', () => {
+                if (!selectedWord) return;
+
+                const wordKey = selectedWord.getAttribute('data-key');
+                const imageKey = image.getAttribute('data-key');
+
+                if (wordKey === imageKey) {
+                    // Correct match
+                    matches.set(wordKey, imageKey);
+                    selectedWord.classList.add('matched');
+                    image.classList.add('matched');
+                }
+                selectedWord.classList.remove('selected');
+                selectedWord = null;
+            });
+        });
+
+        doneButton.addEventListener('click', () => {
+            if (matches.size === words.length) {
+                message.textContent = '¡Felicidades! Relacionaste todo correctamente,felicidades corazón. 🎉';
+                message.className = 'message success';
+            } else {
+                message.textContent = 'Algunas relaciones son incorrectas. 😢Que mal, Intenta de nuevo mi vida.';
+                message.className = 'message fail';
+            }
+            message.style.display = 'block';
+        });
+
+        retryButton.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
+
